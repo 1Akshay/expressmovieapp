@@ -1,0 +1,80 @@
+var movieList = [];
+var Movie = React.createClass({
+ render: function(){
+ return(
+   <div>
+       <MovieHead/>
+       <MovieBody text = ""/>
+   </div>
+ )
+ }
+})
+var MovieHead = React.createClass({
+ render : function() {
+   return(
+     <div >
+           <div className="jumbotron well" style = {{fontFamily : 'Lobster', fontStyle : 'cursive', textAlign : 'center'}}>
+               <h1 id = "title">Movie Database</h1>
+           </div>
+     </div>
+   )
+ }
+});
+var MovieBody = React.createClass({
+     getInitialState: function() {
+         return {text : '' ,data :[]};
+       },
+     onChange : function(e){
+
+     this.setState({text : e.target.value});
+     },
+     render: function(){
+       return (
+         <div className = "container-fluid">
+               <div className = "col-xs-4" style = {{marginLeft : 350}}>
+                   <input className = "form-control input-lg" id = "text" type = "text" placeholder = "Please enter movie name" onChange = {this.onChange} value = {this.state.text} />
+               </div>
+               <div className = "col-xs-2">
+                   <input className = "form-control input-lg btn btn-success" type = "submit" value = "Search" onClick = {this.searchOMDB}/>
+               </div>
+               <div className = "col-xs-12 alert alert-info" style = {{marginTop : 30 , color : "orange", fontStyle : "italic", fontSize : "20px"}}>
+              <pre><h2>{this.state.data}</h2></pre>
+               </div>
+               <div>
+                 <MovieHistory />
+               </div>
+         </div>
+       );
+       },
+   searchOMDB : function(){
+   var x = "http://www.omdbapi.com/?s="+document.getElementById('text').value+"&r=json";
+   $.ajax({
+       url : x,
+       dataType : 'json',
+       cache : false,
+       success : function(data) {
+         data.Search.map(function(d){
+             movieList.push(d);
+         })
+       this.setState({data: JSON.stringify(data), text : ''});
+       }.bind(this),
+       error : function(xhr, status, err) {
+       console.error(this.props.url, status, err.toString());
+       }.bind(this)
+     });
+   }
+});
+var MovieHistory = React.createClass({
+                 render : function(){
+
+                 return(
+                     <div className="col-lg-12">
+                      {movieList.map(function(d){
+                          console.log(d.Poster);
+                        return (<div className="col-lg-12 well"><img src={d.Poster} alt="No Poster Available" width = "300px"/></div>);
+                      })}
+                     </div>
+                   );
+                 }
+               });
+ReactDOM.render(<Movie />,document.getElementById('content'));

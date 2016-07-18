@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>mymovie</title>
+  </head>
+<body>
+  <script src="bower_components/react/react.js"></script>
+   <script src="bower_components/react/react-dom.js"></script>
+   <script src="bower_components/babel/browser.min.js"></script>
+   <script src="bower_components/jquery/dist/jquery.min.js"></script>
+
+     <div id="mount-point"></div>
+        <div id="index1"></div>
+     <script type="text/babel">
+    var Counter = React.createClass({
+      incrementCount: function(){
+        this.setState({
+          count: this.state.count + 1
+        });
+      },
+      getInitialState: function(){
+        return {
+          count: 0
+        }
+      },
+          authenticate: function(e){
+            e.preventDefault();
+          var data={username:ReactDOM.findDOMNode(this.refs.username).value,
+                    password:ReactDOM.findDOMNode(this.refs.password).value
+          }
+           var url="";
+           alert(data);
+             $.ajax({
+                 type:"POST",
+                  dataType:'json',
+                  url:url,
+                  data:data
+                }).done(function(data) {
+           console.log(data);
+         })
+         .fail(function(jqXhr) {
+           console.log('failed to register');
+         });
+       },
+      render: function(){
+        return (
+          <div>
+  <input type="text" placeholder="Enter username" ref="username"/>
+  <input type="password" placeholder="Enter password" ref="password"/>
+  <button type="button" onClick={this.authenticate} value="submit">submit</button>
+          </div>
+        );
+      }
+    });
+ReactDOM.render(<Counter/>, document.getElementById('mount-point'));
+
+  //var login = React.createClass({
+ //    authenticate: function(){
+ //      //e.preventDefault();
+ //    var data={username:ReactDOM.findDOMNode(this.refs.username).value,
+ //              password:ReactDOM.findDOMNode(this.refs.password).value
+ //    }
+ //     var url="";
+ //     alert(data);
+ //       $.ajax({
+ //           type:"POST",
+ //            dataType:'json',
+ //            url:url,
+ //            data:data
+ //          }).done(function(data) {
+ //     console.log(data);
+ //   })
+ //   .fail(function(jqXhr) {
+ //     console.log('failed to register');
+ //   });
+ // },
+//     render : function(){
+//       return(
+//         <div>
+//         <input type="text" placeholder="Enter username" ref="username"/>
+//         <input type="password" placeholder="Enter password" ref="password"/>
+//         <button type="button" onClick={this.authenticate} value="submit">submit</button>
+//         </div>
+//       );
+//     }
+//   });
+// ReactDOM.render(<login />, document.getElementById("index1"));
+   </script>
+</body>
+</html>

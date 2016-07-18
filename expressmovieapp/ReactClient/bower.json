@@ -1,0 +1,19 @@
+{
+  "name": "Reactjs",
+  "homepage": "https://github.com/1Akshay/html-bootstrap",
+  "description": "fetches movies",
+  "main": "",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "react": "^15.2.0",
+    "babel": "*",
+    "bootstrap": "^3.3.6"
+  }
+}

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>assignment</title>
+	<script src="bower_components/react/react.js"></script>
+	<script src="bower_components/react/react-dom.js"></script>
+	<script src="bower_components/babel/browser.min.js"></script>
+</head>
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<body>
+	<div id="movie"></div>
+	<div id="json"></div>
+	<script type="text/babel">
+	var url1="";
+	var Moviename=React.createClass({
+		getInitialState: function(){
+			return {
+				res : []
+			};
+		},
+		demo : function(){
+			console.log("Hello world!");
+			//var url1="";
+			var movieName=ReactDOM.findDOMNode(this.refs.find).value;
+			if (ReactDOM.findDOMNode(this.refs.menu).value==="1") {
+			 url1=url1+"http://www.omdbapi.com/?t="+movieName+"&y=&plot=short&r=json";
+			}
+			if (ReactDOM.findDOMNode(this.refs.menu).value==="2") {
+			 url1=url1+"http://localhost:8080/movies/findAll";
+			}
+			console.log(url1);
+			$.ajax({
+				url: url1,
+				dataType: 'json',
+				cache: false,
+				success: function(data) {
+					console.log("HI"+JSON.stringify(data));
+					this.setState({res : (data)});
+					//console.log(data);
+					// if(url1.includes("findAll")){
+					// this.setState({res : data});}
+					// if(url1.includes("ombdapi"||url1.includes(""))){
+					// 	this.setState({res : data})
+					// }
+					console.log(this.state.res);
+				}.bind(this),
+				error: function(xhr, status, err) {
+					console.error(this.props.url, status, err.toString());
+				}.bind(this)
+			});
+		},
+		render : function(){
+			if(url1.includes("omdbapi")||url1.includes("")){
+			return(
+				<div>
+				<input type="textarea" placeholder="Enter Movie Name" name="search" ref="find"/>
+				<select id = "dropdown" ref = "menu">
+            <option value="N/A">N/A</option>
+            <option value="1">From omdbapi</option>
+            <option value="2">From localdb</option>
+        </select>
+				<button type="button" onClick={this.demo}>submit</button>
+				<Results res={this.state.res} />
+				</div>
+			);
+		 }
+		 if(url1.includes("findAll")){
+			 console.log(url1);
+			 return(
+				 <div>
+				 <input type="textarea" placeholder="Enter Movie Name" name="search" ref="find"/>
+				 <select id = "dropdown" ref = "menu">
+						 <option value="N/A">N/A</option>
+						 <option value="1">From omdbapi</option>
+						 <option value="2">From localdb</option>
+				 </select>
+				 <button type="button" onClick={this.demo}>submit</button>
+				 <DbResults dbres={this.state.res} />
+				 <input type="textarea" placeholder="Modify Movie Name" name="search" ref="name"/>
+				 </div>
+			 );
+		 }
+		}
+	});
+ 	var Results = React.createClass({
+    deleteData : function(e){
+				e.preventDefault();
+			var data={Title:ReactDOM.findDOMNode(this.refs.del).value}
+       var url='/movies/Delete/Title';
+			 alert(data);
+				 $.ajax({
+						 type:"DELETE",
+							dataType:'json',
+							url:url,
+							data:data
+						}).done(function(data) {
+			 console.log(data);
+		 })
+		 .fail(function(jqXhr) {
+			 console.log('failed to register');
+		 });
+		},
+		submitFormData:function(e){
+			e.preventDefault();
+			   alert("Ajax")
+			   var url='/movies/insert';
+			   var data={
+			     Rated:ReactDOM.findDOMNode(this.refs.Rated).value,
+			     Title:this.props.res.Title,
+					 Actors:this.props.res.Actors,
+					 Director:this.props.res.Director
+			   }
+			   alert(data);
+			     $.ajax({
+			         type:"POST",
+			          dataType:'json',
+			          url:url,
+			          data:data
+			        }).done(function(data) {
+			   console.log(data);
+			 })
+			 .fail(function(jqXhr) {
+			   console.log('failed to register');
+			 });
+		},
+	render : function(){
+		if (this.props.res.length===undefined) {
+			//console.log( typeof(this.props.res) );
+
+	 	return(
+         <div>
+				 <form  onSubmit={this.submitFormData}>
+				    <div className="col-lg-12">
+			      <div className="col-lg-4 well"><img src={this.props.res.Poster} alt="No Poster Available" width = "300px"/></div>
+            <div className="col-lg-8">
+					<h4 ref="title">{this.props.res.Title}</h4>
+					<h4 ref="director">Director:{this.props.res.Director}</h4>
+					<h4 ref="actors">Actors:{this.props.res.Actors}</h4>
+            <h4 ref="plot">Plot:{this.props.res.Plot}</h4>
+						<ul>
+						<li><h4>Awards</h4>{this.props.res.Awards}<span>|</span></li>
+						<li><h4>Ratings</h4><input type="text" ref="Rated" defaultValue={this.props.res.Rated} /></li>
+						<input type="submit" value="Add to Database"/>
+						</ul>
+            </div>
+						</div>
+						</form>
+						<input type="text" placeholder="moviename" ref="del"/>
+							<button type="button" onClick={this.deleteData}>delete</button>
+						</div>
+	   		);
+			}if(this.props.res.length===0) {
+				return(<div></div>);
+			}
+	   	}
+		});
+		 var DbResults = React.createClass({
+		 	render : function(){
+		 		if (this.props.dbres.length!=0) {
+		 			console.log( this.props.dbres );
+		 		return(
+					<div>
+ {
+	 this.props.dbres.map(function(movie){
+         return(
+					 <div>
+				 <h4>Title:{movie.Title}</h4>
+				 <h4>Director:{movie.Director}</h4>
+				 <h4>Actors:{movie.Actors}</h4>
+				 <h4>Ratings:{movie.Rated}</h4>
+				 </div>
+			 );
+	 })
+ }
+ </div>
+		 );
+		 			}
+					else {
+		 				return(<div></div>);
+		 			}
+		 			}
+		 });
+	 ReactDOM.render(<Moviename />, document.getElementById('movie'));
+	</script>
+</body>
+</html>
